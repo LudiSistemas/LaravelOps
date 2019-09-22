@@ -11,7 +11,10 @@ This repo is intended for all developers that needs their service up and running
 3. then : **sudo ./runme.sh**
 4. Fill in the details as instructed
 5. FIle docker-compose will be created at the root of directory
-6. Run it with: **sudo docker-compose up -d**
+6. Copy your project files inside of **server/yourdomain** directory
+7. Run it with: **sudo docker-compose up -d**
+
+
 
 # How to stop it :)
 
