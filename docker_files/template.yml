@@ -1,0 +1,99 @@
+version: "3.3"
+
+services:
+#Site serving configuration
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./mounts/nginx/conf.d:/etc/nginx/conf.d
+      - ./server:/var/www/
+
+    ports:
+      - "80:80"
+    expose:
+      - "80"
+    networks:
+      - local_network
+    depends_on:
+    - laravel1
+
+#For more then one laravel, you will need to replicate this code block
+  laravel1:
+    container_name: laravel1
+    build:
+      context: .
+      dockerfile: ./docker_files/laravel/Dockerfile
+
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mysql-db
+    volumes:
+      - ./server/user_domain:/var/www/user_domain
+    networks:
+      - local_network
+###End of laravel block
+ 
+  mysql-db:
+    image: mysql/mysql-server:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user_database 
+      MYSQL_PASSWORD: pass_database
+      MYSQL_DATABASE: name_database
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - ./mounts/mysql/db_data8:/var/lib/mysql
+    networks:
+      - local_network
+
+ # mysql-db-5.7:
+ #   image: mysql/mysql-server:5.7
+ #   container_name: mysql5
+ #   environment:
+ #     MYSQL_ROOT_PASSWORD: root
+ #     MYSQL_USER: user
+ #     MYSQL_PASSWORD: pass
+ #     MYSQL_DATABASE: database
+ #   ports:
+ #     - "3307:3306"
+ #   expose:
+ #     - "3306"
+ #   volumes:
+ #     - ./mounts/mysql/db_data5:/var/lib/mysql
+ #   networks:
+ #     - local_network
+
+  # mongo-db:
+  #   image: mongo:latest
+  #   container_name: mongodb
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: mongouser
+  #     MONGO_INITDB_ROOT_PASSWORD: monogpass
+  #   ports:
+  #     - "6379:6379"
+  #   expose:
+  #     - "6379"
+  #   volumes:
+  #     - ./mounts/mongodb:/data/db
+  #   networks:
+  #     - local_network
+
+  # redis:
+  #   image: redis:latest
+  #   container_name: reDISko
+  #   ports:
+  #     - "6380:6380"
+  #     - "6380"
+  #   volumes:
+  #     - ./mounts/redis:/data
+  #   networks:
+  #     - local_network
+networks:
+  local_network:
+    driver: bridge

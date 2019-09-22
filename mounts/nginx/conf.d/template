@@ -1,0 +1,30 @@
+server {
+ listen 80;
+ listen [::]:80;
+ #add url for resolving
+ server_name user_domain;
+ #please enter webrot
+ root /var/www/user_domain/public;
+
+ index index.html index.php;
+ try_files $uri /index.html;
+
+ client_max_body_size 256M;
+ #If you wat to read this logs without enterning ninx container, mount var logs in compose file. 
+  error_log  /var/log/nginx/user_domain.log;
+  access_log /var/log/nginx/user_domain.log;
+
+  location / {
+  try_files $uri $uri/ /index.php$is_args$args;
+  }
+  location ~ \.php$ {
+    try_files $uri = 404;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass laravel1:9000;
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+  }
+
+}
